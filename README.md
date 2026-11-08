@@ -2,12 +2,12 @@
 
 ## Data 
 
-The analysis uses two CMS 2025 Q2 OON files:
+I used two CMS 2025 Q2 OON files:
 
 1. OON Emergency and Non-Emergency
 2. OON Air Ambulance
 
-The QPA and Offers file was also reviewed but excluded from the final counts because it does not contain the provider NPIs, health plan names, dispute numbers, or DLI numbers needed for this analysis.
+The QPA and Offers file was  reviewed but excluded from the final counts because it does not contain the provider NPIs, health plan names, dispute numbers, or DLI numbers needed for this analysis.
 
 The relevant variables were identified by examining the dataset descriptions, variable names, and variable labels.
 
