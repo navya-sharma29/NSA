@@ -2,75 +2,43 @@
 clear all
 set more off
 
-tempfile emergency_ids ambulance_ids
+use "tasks/import-2025q2/output/processed-data.dta", clear
 
-* Part 1: Import Emergency and Non-Emergency data
+putexcel set "tasks/import-2025q2/output/counts.xlsx", replace
+putexcel A1=("Measure") B1=("Unique Count")
 
-import delimited "data/Federal IDR PUF for 2025 Q2 - OON Emergency & Non-Emergency (As of January 21, 2026).csv", clear varnames(1)
+local row = 2
 
-count if missing(providerfacilityname)
-count if lower(trim(providerfacilityname)) == "unreported"
-count if missing(providerfacilitynpinumber)
-count if missing(healthplanissuername)
-count if lower(trim(healthplanissuername)) == "unreported"
+foreach v in providerfacilitynpinumber healthplanissuername disputenumber dlinumber {
 
-keep providerfacilitynpinumber providerfacilityname healthplanissuername disputenumber dlinumber
+    if "`v'" == "healthplanissuername" {
+        egen tag_`v' = tag(`v') if trim(`v') != "" & lower(trim(`v')) != "unreported"
+        local label "Health plans/issuers"
+    }
 
-gen str2045 plan_name = healthplanissuername
-drop healthplanissuername
-rename plan_name healthplanissuername
+    else {
+        egen tag_`v' = tag(`v') if !missing(`v')
 
-save `emergency_ids'
+        if "`v'" == "providerfacilitynpinumber" {
+            local label "Providers (unique NPIs)"
+        }
 
-* Part 2: Import Air Ambulance data
+        if "`v'" == "disputenumber" {
+            local label "Disputes"
+        }
 
-clear
-import delimited "data/Federal IDR PUF for 2025 Q2 - OON Air Ambulance (As of January 21, 2026).csv", clear varnames(1)
+        if "`v'" == "dlinumber" {
+            local label "Dispute line items"
+        }
+    }
 
-count if missing(providerfacilityname)
-count if lower(trim(providerfacilityname)) == "unreported"
-count if missing(providerfacilitynpinumber)
-count if missing(healthplanissuername)
-count if lower(trim(healthplanissuername)) == "unreported"
+    count if tag_`v' == 1
+    local n = r(N)
 
-keep providerfacilitynpinumber providerfacilityname healthplanissuername disputenumber dlinumber
+    putexcel A`row'=("`label'") B`row'=(`n')
 
-gen str2045 plan_name = healthplanissuername
-drop healthplanissuername
-rename plan_name healthplanissuername
-
-save `ambulance_ids'
-
-* Part 3: Combine both OON datasets
-
-use `emergency_ids', clear
-append using `ambulance_ids'
-
-count
-
-* Part 4: Count unique providers
-
-sort providerfacilitynpinumber
-by providerfacilitynpinumber: gen provider_tag = (_n == 1) if !missing(providerfacilitynpinumber)
-count if provider_tag == 1
-
-* Part 5: Count unique health plans
-
-sort healthplanissuername
-by healthplanissuername: gen plan_tag = (_n == 1) if trim(healthplanissuername) != "" & lower(trim(healthplanissuername)) != "unreported"
-count if plan_tag == 1
-
-* Part 6: Count unique disputes
-
-sort disputenumber
-by disputenumber: gen dispute_tag = (_n == 1) if !missing(disputenumber)
-count if dispute_tag == 1
-
-* Part 7: Count unique dispute line items
-
-sort dlinumber
-by dlinumber: gen item_tag = (_n == 1) if !missing(dlinumber)
-count if item_tag == 1
+    local row = `row' + 1
+}
 
 
 
