@@ -2,9 +2,9 @@
 clear all
 set more off
 
-use "tasks/import-2025q2/output/processed-data.dta", clear
+use "../output/processed-data.dta", clear
 
-putexcel set "tasks/import-2025q2/output/counts.xlsx", replace
+putexcel set "../output/counts.xlsx", replace
 putexcel A1=("Measure") B1=("Unique Count")
 
 local row = 2
