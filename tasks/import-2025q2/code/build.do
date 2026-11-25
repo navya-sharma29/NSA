@@ -1,4 +1,5 @@
 
+
 clear all
 set more off
 
@@ -8,18 +9,18 @@ local first = 1
 foreach dataset in emergency ambulance {
 
     if "`dataset'" == "emergency" {
-        import delimited "data/Federal IDR PUF for 2025 Q2 - OON Emergency & Non-Emergency (As of January 21, 2026).csv", clear varnames(1)
+        import delimited "../../data/Federal IDR PUF for 2025 Q2 - OON Emergency & Non-Emergency (As of January 21, 2026).csv", clear varnames(1)
     }
 
     else {
-        import delimited "data/Federal IDR PUF for 2025 Q2 - OON Air Ambulance (As of January 21, 2026).csv", clear varnames(1)
+        import delimited "../../data/Federal IDR PUF for 2025 Q2 - OON Air Ambulance (As of January 21, 2026).csv", clear varnames(1)
     }
 
-    count if missing(providerfacilityname)
-    count if lower(trim(providerfacilityname)) == "unreported"
-    count if missing(providerfacilitynpinumber)
-    count if missing(healthplanissuername)
-    count if lower(trim(healthplanissuername)) == "unreported"
+    assert ~missing(providerfacilityname)
+    assert lower(trim(providerfacilityname)) != "unreported"
+    assert ~missing(providerfacilitynpinumber)
+    assert ~missing(healthplanissuername)
+    assert lower(trim(healthplanissuername)) != "unreported"
 
     keep providerfacilitynpinumber providerfacilityname healthplanissuername disputenumber dlinumber
 
@@ -40,4 +41,5 @@ foreach dataset in emergency ambulance {
 
 use `combined', clear
 
-save "tasks/import-2025q2/output/processed-data.dta", replace
+save "../output/processed-data.dta", replace
+
