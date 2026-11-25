@@ -1,5 +1,3 @@
-
-
 clear all
 set more off
 
@@ -9,11 +7,11 @@ local first = 1
 foreach dataset in emergency ambulance {
 
     if "`dataset'" == "emergency" {
-        import delimited "../../data/Federal IDR PUF for 2025 Q2 - OON Emergency & Non-Emergency (As of January 21, 2026).csv", clear varnames(1)
+        import delimited "../../../data/Federal IDR PUF for 2025 Q2 - OON Emergency & Non-Emergency (As of January 21, 2026).csv", clear varnames(1)
     }
 
     else {
-        import delimited "../../data/Federal IDR PUF for 2025 Q2 - OON Air Ambulance (As of January 21, 2026).csv", clear varnames(1)
+        import delimited "../../../data/Federal IDR PUF for 2025 Q2 - OON Air Ambulance (As of January 21, 2026).csv", clear varnames(1)
     }
 
     assert ~missing(providerfacilityname)
